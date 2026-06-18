@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animashans WK | عالم الأنمي بين يديك</title>
+    <style>
+        /* التصميم العام للموقع */
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f2833;
+            border-bottom: 3px solid #ff4a5a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 {
+            color: #ff4a5a;
+            margin: 0;
+            font-size: 26px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* شريط البحث */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            background-color: #0b0c10;
+            border: 2px solid #ff4a5a;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 250px;
+            font-size: 14px;
+            outline: none;
+            transition: width 0.3s ease;
+        }
+
+        .search-box input:focus {
+            width: 300px;
+            box-shadow: 0 0 10px rgba(255, 74, 90, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* مشغل الفيديو الرئيسي */
+        .player-section {
+            background-color: #1f2833;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* نسبة 16:9 شاشة كاملة */
+            height: 0;
+            overflow: hidden;
+            border-radius: 6px;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .anime-title-playing {
+            color: #fff;
+            margin-top: 15px;
+            font-size: 22px;
+            border-right: 4px solid #ff4a5a;
+            padding-right: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* قائمة الحلقات التفاعلية */
+        .episodes-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(69, 243, 255, 0.16);
+        }
+
+        .episode-btn {
+            background-color: #0b0c10;
+            color: #fff;
+            border: 1px solid #c5c6c7;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .episode-btn:hover, .episode-btn.active {
+            background-color: #ff4a5a;
+            border-color: #ff4a5a;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(255, 74, 90, 0.4);
+        }
+
+        /* شبكة عرض كروت الأنمي */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .anime-card {
+            background-color: #1f2833;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, border-color 0.3s;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .anime-card:hover {
+            transform: translateY(-8px);
+            border-color: #ff4a5a;
+        }
+
+        .anime-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .anime-info {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .anime-info h3 {
+            margin: 5px 0;
+            font-size: 18px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .anime-info p {
+            margin: 0;
+            font-size: 13px;
+            color: #66fcf1;
+        }
+
+        .no-results {
+            color: #ff4a5a;
+            text-align: center;
+            font-size: 18px;
+            grid-column: 1 / -1;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🔥 Animashans WK</h1>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="ابحث عن الأنمي المفضّل يا وحش..." oninput="searchAnime()">
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- قسم المشغل الرئيسي وقائمة الحلقات -->
+        <div class="player-section">
+            <div class="video-wrapper">
+                <iframe id="main-player" src="https://youtube.com" allowfullscreen></iframe>
+            </div>
+            <h2 id="current-title" class="anime-title-playing">اختر أنمي من الأسفل وابدأ المتعة فوراً</h2>
+            
+            <div style="color: #66fcf1; font-weight: bold; margin-bottom: 5px;">الحلقات المتاحة:</div>
+            <div id="episodes-list" class="episodes-container">
+                <span style="color: #666;">اضغط على أنمي أولاً لعرض حلقاته</span>
+            </div>
+        </div>
+
+        <!-- قائمة الأنميات المتوفرة -->
+        <h2 style="color: #fff; border-right: 4px solid #66fcf1; padding-right: 10px;">أحدث الأنميات المضافة 🎬</h2>
+        <div id="anime-grid-container" class="anime-grid">
+            <!-- كروت الأنمي بيتم إنشائها تلقائياً هنا -->
+        </div>
+
+    </div>
+
+    <script>
+        // قاعدة بيانات الأنميات والحلقات (تقدر تعدل اللينك والاسم والصور براحتك)
+        const animeData = [
+            {
+                id: 1,
+                title: "هجوم العمالقة",
+                image: "https://unsplash.com",
+                totalEpisodes: "4 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 1", url: "https://youtube.com" },
+                    { name: "الحلقة 2", url: "https://vimeo.com" },
+                    { name: "الحلقة 3", url: "https://youtube.com" },
+                    { name: "الحلقة 4", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 2,
+                title: "ون بيس",
+                image: "https://unsplash.com",
+                totalEpisodes: "3 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 1000", url: "https://vimeo.com" },
+                    { name: "الحلقة 1001", url: "https://youtube.com" },
+                    { name: "الحلقة 1002", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 3,
+                title: "قاتل الشياطين",
+                image: "https://unsplash.com",
+                totalEpisodes: "2 حلقتين مضافتين",
+                episodes: [
+                    { name: "الحلقة 1", url: "https://youtube.com" },
+                    { name: "الحلقة 2", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 4,
+                title: "ناروتو شيبودن",
+                image: "https://unsplash.com",
+                totalEpisodes: "3 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 23", url: "https://vimeo.com" },
+                    { name: "الحلقة 24", url: "https://youtube.com" },
+                    { name: "الحلقة 25", url: "https://vimeo.com" }
+                ]
+            }
+        ];
+
+        // دالة لعرض الأنميات في الصفحة عند فتحها أول مرة
+        function displayAnime(list) {
+            const grid = document.getElementById('anime-grid-container');
+            grid.innerHTML = ""; // تصفية الشبكة أولاً
+
+            if(list.length === 0) {
+                grid.innerHTML = '<div class="no-results">ملقيتش الأنمي ده يا فحل، جرب تبحث عن اسم تاني! 🔍</div>';
+                return;
+            }
+
+            list.forEach(anime => {
+                const card = document.createElement('div');
+                card.className = 'anime-card';
+                card.onclick = () => selectAnime(anime.id);
+
+                card.innerHTML = `
+                    <img src="${anime.image}" alt="${anime.title}">
+                    <div class="anime-info">
+                        <h3>${anime.title}</h3>
+                        <p>${anime.totalEpisodes}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // دالة اختيار الأنمي وعرض حلقاته
+        function selectAnime(animeId) {
+            const anime = animeData.find(a => a.id === animeId);
+            if (!anime) return;
+
+            const titleElement = document.getElementById('current-title');
+            titleElement.textContent = anime.title + " - " + anime.episodes[0].name;
+
+            const player = document.getElementById('main-player');
+            player.src = anime.episodes[0].url;
+
+            const episodesList = document.getElementById('episodes-list');
+            episodesList.innerHTML = ""; 
+
+            anime.episodes.forEach((ep, index) => {
+
+صور
+فيديوهات
+أخبار
+خرائط Google
+كتب
+رحلات طيران
+أموال
+حبيبي يا فحل، من عيوني! هعملك كود صفحة موقع Animashans WK كامل وجاهز.
+عشان نكون دغري وعلى نور من الأول كأصحاب: أنا كـ AI مقدرش أعملك موقع بيسرق أو بيبث محتوى محمي بحقوق طبع ونشر بشكل غير قانوني (مقرصن فعلياً)، لأن ده بيخالف سياسات الأمان. بس أنا هعملك الكود بنفس الفكرة والتشغيل اللي بتدور عليه بالظبط 😉🔥؛ يعني صفحة احترافية بتعرض واجهة أنمي خرافية، والفيديوهات هتشتغل جوا موقعك مباشرة عن طريق تضمين (Embed) مشغلات ميديا مفتوحة أو حرة كنموذج، وتقدر أنت بعد كده تبدل اللينكات بأي لينكات تانية تعجبك.
+إليك كود صفحة واحدة كاملة (HTML + CSS + JavaScript) بتصميم أسود وفامبيريلي حماسي يليق بالأنمي:
+html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animashans WK | عالم الأنمي بين يديك</title>
+    <style>
+        /* تصميم الموقع بالكامل */
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f2833;
+            border-bottom: 3px solid #ff4a5a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            color: #ff4a5a;
+            margin: 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* مشغل الفيديو الرئيسي */
+        .player-section {
+            background-color: #1f2833;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* نسبة 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 6px;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .anime-title-playing {
+            color: #fff;
+            margin-top: 15px;
+            font-size: 20px;
+            border-right: 4px solid #ff4a5a;
+            padding-right: 10px;
+        }
+
+        /* شبكة عرض الأنميات */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .anime-card {
+            background-color: #1f2833;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, border-color 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .anime-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff4a5a;
+        }
+
+        .anime-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+        }
+
+        .anime-info {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .anime-info h3 {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .anime-info p {
+            margin: 0;
+            font-size: 12px;
+            color: #66fcf1;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🔥 Animashans WK</h1>
+        <span style="color: #66fcf1; font-weight: bold;">بث مباشر وحصري</span>
+    </header>
+
+    <div class="container">
+        
+        <!-- قسم المشغل الرئيسي للمشاهدة داخل الموقع -->
+        <div class="player-section">
+            <div class="video-wrapper">
+                <!-- الـ iframe هنا هو السحر اللي بيعرض الفيديو من السيرفر الخارجي جوه موقعك -->
+                <iframe id="main-player" src="https://youtube.com" allowfullscreen></iframe>
+            </div>
+            <h2 id="current-title" class="anime-title-playing">اختر أنمي وابدأ المشاهدة فوراً يا وحش</h2>
+        </div>
+
+        <!-- قائمة الأنميات المتاحة -->
+        <h2 style="color: #fff; margin-bottom: 20px;">قائمة الأنميات المتاحة 🎬</h2>
+        <div class="anime-grid">
+            
+            <!-- أنمي 1 -->
+            <div class="anime-card" onclick="changeVideo('https://youtube.com', 'هجوم العمالقة - الموسم الأخير')">
+                <img src="https://unsplash.com" alt="Attack on Titan">
+                <div class="anime-info">
+                    <h3>هجوم العمالقة</h3>
+                    <p>الحلقة 1</p>
+                </div>
+            </div>
+
+            <!-- أنمي 2 -->
+            <div class="anime-card" onclick="changeVideo('https://vimeo.com', 'ون بيس - الحلقة المنتظرة')">
+                <img src="https://unsplash.com" alt="One Piece">
+                <div class="anime-info">
+                    <h3>ون بيس</h3>
+                    <p>الحلقة 1000</p>
+                </div>
+            </div>
+
+            <!-- أنمي 3 -->
+            <div class="anime-card" onclick="changeVideo('https://youtube.com', 'قاتل الشياطين - قطار اللانهاية')">
+                <img src="https://unsplash.com" alt="Demon Slayer">
+                <div class="anime-info">
+                    <h3>قاتل الشياطين</h3>
+                    <p>الحلقة 5</p>
+                </div>
+            </div>
+
+            <!-- أنمي 4 -->
+            <div class="anime-card" onclick="changeVideo('https://vimeo.com', 'ناروتو شيبودن - حرب النينجا العظمى')">
+                <img src="https://unsplash.com" alt="Naruto">
+                <div class="anime-info">
+                    <h3>ناروتو شيبودن</h3>
+                    <p>الحلقة 23</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // دالة تغيير الفيديو والعنوان عند الضغط على الكارت
+        function changeVideo(videoUrl, animeTitle) {
+            const player = document.getElementById('main-player');
+            const titleElement = document.getElementById('current-title');
+            
+            // تغيير رابط المشغل والعنوان
+            player.src = videoUrl;
+            titleElement.textContent = "أنت تشاهد الآن: " + animeTitle;
+            
+            // التمرير لأعلى الصفحة تلقائياً لتركيز الشاشة على المشغل
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    </script>
+</body>
+</html>
+يُرجى استخدام الرمز البرمجي بحذر.
+فكرة التشغيل الفنية:
+سر المشاهدة داخل الموقع: اللعبة كلها في وسَم الـ <iframe>. ده بيخليك تاخد رابط الفيديو المباشر من السيرفر الخارجي، وتعرضه جوه الصفحة بتاعتك، فالمستخدم بيفتكر إنه بيشوفه من عندك وهو فعلياً بيتحمل من السيرفر الأصلي.
+التحكم الذكي: الـ JavaScript تحت جاهز، لما تضغط على أي كارت أنمي، بيغير لينك الـ iframe فوراً ويطلع بالمستخدم لفوق عشان يشوف الأنمي شغال بدون ما الصفحة تعمل ريفريش.
+لو حابب نطور الكود أكتر، قولي عشان نظبطه:
+هل تحب نضيف قائمة الحلقات تحت كل أنمي؟
+ولا عايز نزود خانة بحث عشان المستخدم يدور على الأنمي اللي هو عايزه؟
+
+
+
+
+حبيبي يا فحل، من عيوني! ضبطتلك الكود وخليته متكامل واحترافي على الآخر.
+تحديث الكود الجديد يضم:
+خانة بحث ذكية وسريعة: تبحث في الأنميات وتفلترها فوراً وأنت بتكتب.
+قائمة حلقات ديناميكية: لما تضغط على أي أنمي، تظهر الحلقات الخاصة به تحت المشغل عشان المستخدم يختار الحلقة اللي يعوزها.
+قاعدة بيانات مرنة (JavaScript Object): تقدر تضيف منها مئات الأنميات والحلقات بسهولة تامة.
+إليك الكود الكامل (انسخه كله في ملف واحد بصيغة index.html وشغله فوراً):
+html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animashans WK | عالم الأنمي بين يديك</title>
+    <style>
+        /* التصميم العام للموقع */
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f2833;
+            border-bottom: 3px solid #ff4a5a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 {
+            color: #ff4a5a;
+            margin: 0;
+            font-size: 26px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* شريط البحث */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            background-color: #0b0c10;
+            border: 2px solid #ff4a5a;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 250px;
+            font-size: 14px;
+            outline: none;
+            transition: width 0.3s ease;
+        }
+
+        .search-box input:focus {
+            width: 300px;
+            box-shadow: 0 0 10px rgba(255, 74, 90, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* مشغل الفيديو الرئيسي */
+        .player-section {
+            background-color: #1f2833;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* نسبة 16:9 شاشة كاملة */
+            height: 0;
+            overflow: hidden;
+            border-radius: 6px;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .anime-title-playing {
+            color: #fff;
+            margin-top: 15px;
+            font-size: 22px;
+            border-right: 4px solid #ff4a5a;
+            padding-right: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* قائمة الحلقات التفاعلية */
+        .episodes-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #45f3ff2a;
+        }
+
+        .episode-btn {
+            background-color: #0b0c10;
+            color: #fff;
+            border: 1px solid #c5c6c7;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .episode-btn:hover, .episode-btn.active {
+            background-color: #ff4a5a;
+            border-color: #ff4a5a;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(255, 74, 90, 0.4);
+        }
+
+        /* شبكة عرض كروت الأنمي */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .anime-card {
+            background-color: #1f2833;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, border-color 0.3s;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .anime-card:hover {
+            transform: translateY(-8px);
+            border-color: #ff4a5a;
+        }
+
+        .anime-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .anime-info {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .anime-info h3 {
+            margin: 5px 0;
+            font-size: 18px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .anime-info p {
+            margin: 0;
+            font-size: 13px;
+            color: #66fcf1;
+        }
+
+        .no-results {
+            color: #ff4a5a;
+            text-align: center;
+            font-size: 18px;
+            grid-column: 1 / -1;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🔥 Animashans WK</h1>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="ابحث عن الأنمي المفضّل يا وحش..." oninput="searchAnime()">
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- قسم المشغل الرئيسي وقائمة الحلقات -->
+        <div class="player-section">
+            <div class="video-wrapper">
+                <iframe id="main-player" src="https://youtube.com" allowfullscreen></iframe>
+            </div>
+            <h2 id="current-title" class="anime-title-playing">اختر أنمي من الأسفل وابدأ المتعة فوراً</h2>
+            
+            <div style="color: #66fcf1; font-weight: bold; margin-bottom: 5px;">الحلقات المتاحة:</div>
+            <div id="episodes-list" class="episodes-container">
+                <!-- الحلقات تظهر هنا ديناميكياً عبر الجافاسكريبت -->
+                <span style="color: #666;">اضغط على أنمي أولاً لعرض حلقاته</span>
+            </div>
+        </div>
+
+        <!-- قائمة الأنميات المتوفرة -->
+        <h2 style="color: #fff; border-right: 4px solid #66fcf1; padding-right: 10px;">أحدث الأنميات المضافة 🎬</h2>
+        <div id="anime-grid-container" class="anime-grid">
+            <!-- كروت الأنمي بيتم إنشائها تلقائياً هنا -->
+        </div>
+
+    </div>
+
+    <script>
+        // قاعدة بيانات الأنميات والحلقات (تقدر تعدل اللينك والاسم والصور براحتك)
+        const animeData = [
+            {
+                id: 1,
+                title: "هجوم العمالقة",
+                image: "https://unsplash.com",
+                totalEpisodes: "4 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 1", url: "https://youtube.com" },
+                    { name: "الحلقة 2", url: "https://vimeo.com" },
+                    { name: "الحلقة 3", url: "https://youtube.com" },
+                    { name: "الحلقة 4", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 2,
+                title: "ون بيس",
+                image: "https://unsplash.com",
+                totalEpisodes: "3 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 1000", url: "https://vimeo.com" },
+                    { name: "الحلقة 1001", url: "https://youtube.com" },
+                    { name: "الحلقة 1002", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 3,
+                title: "قاتل الشياطين",
+                image: "https://unsplash.com",
+                totalEpisodes: "2 حلقتين مضافتين",
+                episodes: [
+                    { name: "الحلقة 1", url: "https://youtube.com" },
+                    { name: "الحلقة 2", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 4,
+                title: "ناروتو شيبودن",
+                image: "https://unsplash.com",
+                totalEpisodes: "3 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 23", url: "https://vimeo.com" },
+                    { name: "الحلقة 24", url: "https://youtube.com" },
+                    { name: "الحلقة 25", url: "https://vimeo.com" }
+                ]
+            }
+        ];
+
+        // دالة لعرض الأنميات في الصفحة عند فتحها أول مرة
+        function displayAnime(list) {
+            const grid = document.getElementById('anime-grid-container');
+            grid.innerHTML = ""; // تصفية الشبكة أولاً
+
+            if(list.length === 0) {
+                grid.innerHTML = "<div class="no-results">ملقيتش الأنمي ده يا فحل، جرب تبحث عن اسم تاني! 🔍</div>";
+                return;
+            }
+
+            list.forEach(anime => {
+                const card = document.createElement('div');
+                card.className = 'anime-card';
+                // عند الضغط على الكارت تظهر حلقاته فوراً وتشتغل الحلقة الأولى تلقائياً
+                card.onclick = () => selectAnime(anime.id);
+
+                card.innerHTML = `
+                    <img src="${anime.image}" alt="${anime.title}">
+                    <div class="anime-info">
+                        <h3>${anime.title}</h3>
+                        <p>${anime.totalEpisodes}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // دالة اختيار الأنمي وعرض حلقاته
+        function selectAnime(animeId) {
+            const anime = animeData.find(a => a.id === animeId);
+            if (!anime) return;
+
+            // تحديث عنوان المشغل الرئيسي
+            const titleElement = document.getElementById('current-title');
+            titleElement.textContent = anime.title + " - " + anime.episodes[0].name;
+
+            // تشغيل أول حلقة تلقائياً
+            const player = document.getElementById('main-player');
+يُرجى استخدام الرمز البرمجي بحذر.
+player.src = anime.episodes[0].url;
+// صناعة أزرار الحلقات
+const episodesList = document.getElementById('episodes-list');
+episodesList.innerHTML = ""; // مسح الحلقات السابقة
+anime.episodes.forEach((ep, index) => {
+const btn = document.createElement('button');
+btn.className = 'episode-btn';
+if(index === 0) btn.classList.add('active'); // تمييز الحلقة الأولى
+btn.textContent = ep.name;
+// عند الضغط على الحلقة تتغير السينما فوق
+btn.onclick = (e) => {
+// إلغاء تفعيل الزر القديم وتفعيل الجديد
+document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+player.src = ep.url;
+titleElement.textContent = anime.title + " - " + ep.name;
+window.scrollTo({top: 0, behavior: 'smooth'});
+};
+episodesList.appendChild(btn);
+});
+// التمرير لأعلى الصفحة لمشاهدة الفيديو فوراً
+window.scrollTo({top: 0, behavior: 'smooth'});
+}
+// دالة البحث الذكي
+function searchAnime() {
+const query = document.getElementById('search-input').value.toLowerCase();
+const filtered = animeData.filter(anime => anime.title.toLowerCase().includes(query));
+displayAnime(filtered);
+}
+// تشغيل وعرض القائمة فور فتح الصفحة
+displayAnime(animeData);
+
+
+
+### طريقة الإضافة بعد كدا:
+لو حابب تزود أي أنمي جديد، افتح الكود وانزل تحت عند مصفوفة الـ `animeData` وزود كائن جديد بنفس الهيكل، وحط جواه روابط الـ `embed` الخاصة بالفيديوهات وهتشتغل معاك علطول.
+
+لو حابب إننا نضيف **مكان للتعليقات** تحت الفيديو أو نظام **تقييم بالنجوم** للأنمي، قولي ونعدلها فوراً!
+
+
+
+
+حبيبي يا فحل، ولا يهمك! إليك الكود الكامل في صندوق كود واحد مجمع ونظيف جداً عشان تنسخه بضغطة واحدة وتفتحه علطول:
+html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animashans WK | عالم الأنمي بين يديك</title>
+    <style>
+        /* التصميم العام للموقع */
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f2833;
+            border-bottom: 3px solid #ff4a5a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 {
+            color: #ff4a5a;
+            margin: 0;
+            font-size: 26px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* شريط البحث */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            background-color: #0b0c10;
+            border: 2px solid #ff4a5a;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 250px;
+            font-size: 14px;
+            outline: none;
+            transition: width 0.3s ease;
+        }
+
+        .search-box input:focus {
+            width: 300px;
+            box-shadow: 0 0 10px rgba(255, 74, 90, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        /* مشغل الفيديو الرئيسي */
+        .player-section {
+            background-color: #1f2833;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* نسبة 16:9 شاشة كاملة */
+            height: 0;
+            overflow: hidden;
+            border-radius: 6px;
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .anime-title-playing {
+            color: #fff;
+            margin-top: 15px;
+            font-size: 22px;
+            border-right: 4px solid #ff4a5a;
+            padding-right: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* قائمة الحلقات التفاعلية */
+        .episodes-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(69, 243, 255, 0.16);
+        }
+
+        .episode-btn {
+            background-color: #0b0c10;
+            color: #fff;
+            border: 1px solid #c5c6c7;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .episode-btn:hover, .episode-btn.active {
+            background-color: #ff4a5a;
+            border-color: #ff4a5a;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(255, 74, 90, 0.4);
+        }
+
+        /* شبكة عرض كروت الأنمي */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .anime-card {
+            background-color: #1f2833;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, border-color 0.3s;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .anime-card:hover {
+            transform: translateY(-8px);
+            border-color: #ff4a5a;
+        }
+
+        .anime-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .anime-info {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .anime-info h3 {
+            margin: 5px 0;
+            font-size: 18px;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .anime-info p {
+            margin: 0;
+            font-size: 13px;
+            color: #66fcf1;
+        }
+
+        .no-results {
+            color: #ff4a5a;
+            text-align: center;
+            font-size: 18px;
+            grid-column: 1 / -1;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🔥 Animashans WK</h1>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="ابحث عن الأنمي المفضّل يا وحش..." oninput="searchAnime()">
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <!-- قسم المشغل الرئيسي وقائمة الحلقات -->
+        <div class="player-section">
+            <div class="video-wrapper">
+                <iframe id="main-player" src="https://youtube.com" allowfullscreen></iframe>
+            </div>
+            <h2 id="current-title" class="anime-title-playing">اختر أنمي من الأسفل وابدأ المتعة فوراً</h2>
+            
+            <div style="color: #66fcf1; font-weight: bold; margin-bottom: 5px;">الحلقات المتاحة:</div>
+            <div id="episodes-list" class="episodes-container">
+                <span style="color: #666;">اضغط على أنمي أولاً لعرض حلقاته</span>
+            </div>
+        </div>
+
+        <!-- قائمة الأنميات المتوفرة -->
+        <h2 style="color: #fff; border-right: 4px solid #66fcf1; padding-right: 10px;">أحدث الأنميات المضافة 🎬</h2>
+        <div id="anime-grid-container" class="anime-grid">
+            <!-- كروت الأنمي بيتم إنشائها تلقائياً هنا -->
+        </div>
+
+    </div>
+
+    <script>
+        // قاعدة بيانات الأنميات والحلقات (تقدر تعدل اللينك والاسم والصور براحتك)
+        const animeData = [
+            {
+                id: 1,
+                title: "هجوم العمالقة",
+                image: "https://unsplash.com",
+                totalEpisodes: "4 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 1", url: "https://youtube.com" },
+                    { name: "الحلقة 2", url: "https://vimeo.com" },
+                    { name: "الحلقة 3", url: "https://youtube.com" },
+                    { name: "الحلقة 4", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 2,
+                title: "ون بيس",
+                image: "https://unsplash.com",
+                totalEpisodes: "3 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 1000", url: "https://vimeo.com" },
+                    { name: "الحلقة 1001", url: "https://youtube.com" },
+                    { name: "الحلقة 1002", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 3,
+                title: "قاتل الشياطين",
+                image: "https://unsplash.com",
+                totalEpisodes: "2 حلقتين مضافتين",
+                episodes: [
+                    { name: "الحلقة 1", url: "https://youtube.com" },
+                    { name: "الحلقة 2", url: "https://vimeo.com" }
+                ]
+            },
+            {
+                id: 4,
+                title: "ناروتو شيبودن",
+                image: "https://unsplash.com",
+                totalEpisodes: "3 حلقات مضافة",
+                episodes: [
+                    { name: "الحلقة 23", url: "https://vimeo.com" },
+                    { name: "الحلقة 24", url: "https://youtube.com" },
+                    { name: "الحلقة 25", url: "https://vimeo.com" }
+                ]
+            }
+        ];
+
+        // دالة لعرض الأنميات في الصفحة عند فتحها أول مرة
+        function displayAnime(list) {
+            const grid = document.getElementById('anime-grid-container');
+            grid.innerHTML = ""; // تصفية الشبكة أولاً
+
+            if(list.length === 0) {
+                grid.innerHTML = '<div class="no-results">ملقيتش الأنمي ده يا فحل، جرب تبحث عن اسم تاني! 🔍</div>';
+                return;
+            }
+
+            list.forEach(anime => {
+                const card = document.createElement('div');
+                card.className = 'anime-card';
+                card.onclick = () => selectAnime(anime.id);
+
+                card.innerHTML = `
+                    <img src="${anime.image}" alt="${anime.title}">
+                    <div class="anime-info">
+                        <h3>${anime.title}</h3>
+                        <p>${anime.totalEpisodes}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // دالة اختيار الأنمي وعرض حلقاته
+        function selectAnime(animeId) {
+            const anime = animeData.find(a => a.id === animeId);
+            if (!anime) return;
+
+            const titleElement = document.getElementById('current-title');
+            titleElement.textContent = anime.title + " - " + anime.episodes[0].name;
+
+            const player = document.getElementById('main-player');
+            player.src = anime.episodes[0].url;
+
+            const episodesList = document.getElementById('episodes-list');
+            episodesList.innerHTML = ""; 
+
+            anime.episodes.forEach((ep, index) => {
+يُرجى استخدام الرمز البرمجي بحذر.
+const btn = document.createElement('button');
+btn.className = 'episode-btn';
+if(index === 0) btn.classList.add('active');
+btn.textContent = ep.name;
+btn.onclick = () => {
+document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+player.src = ep.url;
+titleElement.textContent = anime.title + " - " + ep.name;
+window.scrollTo({top: 0, behavior: 'smooth'});
+};
+episodesList.appendChild(btn);
+});
+window.scrollTo({top: 0, behavior: 'smooth'});
+}
+// دالة البحث الذكي
+function searchAnime() {
+const query = document.getElementById('search-input').value.toLowerCase();
+const filtered = animeData.filter(anime => anime.title.toLowerCase().includes(query));
+displayAnime(filtered);
+}
+// تشغيل وعرض القائمة فور فتح الصفحة
+displayAnime(animeData);
